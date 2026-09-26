@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avanthi Cricket Carnival - Official Auction Portal Engine</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <h1>Avanthi Cricket Carnival 2026</h1>
+      <span class="subtext">Official End-to-End Player Auction Portal Engine</span>
+    </div>
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('register')">Player Registration</button>
+      <button class="tab-btn" onclick="switchTab('freg')">Franchise Register</button>
+      <button class="tab-btn" onclick="switchTab('franchises')">Franchises</button>
+      <button class="tab-btn" onclick="switchTab('flogin')">Franchise Portal</button>
+      <button class="tab-btn" onclick="switchTab('projector')">Projector View</button>
+      <button class="tab-btn" onclick="switchTab('public')">Public View</button>
+      <button class="tab-btn" onclick="openLiveAuctionAuth()" style="background: #0284c7; color: #fff; font-weight: bold;">Live Auction Console</button>
+      <button class="tab-btn admin-btn-animated" onclick="openAdminAuth()" id="admin-nav-btn">
+        <span class="bat-icon">🏏</span><span class="ball-icon">🥎</span><span class="admin-text"> Admin </span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- TAB 1: PLAYER REGISTRATION -->
+    <section id="tab-register" class="tab-content active">
+      <h2>Player Registration (Phase 1)</h2>
+      <div id="player-flash-banner" class="hidden" style="background: #1e293b; border: 2px solid #3b82f6; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+        <h3 style="color: #60a5fa; margin-bottom: 0.5rem;">Player Registered Successfully! Review Details (<span id="flash-timer-count">10</span>s)</h3>
+        <div id="flash-player-preview" style="display: flex; gap: 1rem; align-items: center;"></div>
+        <button class="btn-sec" style="margin-top: 1rem; background: #d97706;" onclick="editLastRegisteredPlayer()">Edit Details</button>
+      </div>
+
+      <form id="player-form" onsubmit="handlePlayerSubmit(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="rollNo">Roll Number *</label>
+            <input type="text" id="rollNo" placeholder="e.g. 25811A4427" required oninput="parseRollOnType()" />
+            <small id="roll-parsed-info" class="hint-text">Enter roll number to derive academic branch & bucket.</small>
+          </div>
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" required placeholder="Student Name" />
+          </div>
+          <div class="form-group">
+            <label for="mobile">Mobile Number * (Private)</label>
+            <input type="tel" id="mobile" required placeholder="10-digit primary phone" />
+          </div>
+          <div class="form-group">
+            <label for="basePrice">Base Price (Credits) *</label>
+            <select id="basePrice" required>
+              <option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option>
+              <option value="60">60</option><option value="70">70</option><option value="80">80</option><option value="100">100</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="playerPhoto">Player Photo *</label>
+            <input type="file" id="playerPhoto" accept="image/*" onchange="previewPhotoInput(event)" required />
+          </div>
+          <div class="form-group">
+            <label for="cricHeroesUrl">CricHeroes Profile URL *</label>
+            <input type="url" id="cricHeroesUrl" required placeholder="https://cricheroes.in/..." />
+          </div>
+          <div class="form-group">
+            <label for="cricHeroesMobile">CricHeroes Phone *</label>
+            <input type="tel" id="cricHeroesMobile" required placeholder="Registered phone" />
+          </div>
+        </div>
+
+        <h3>Skill Profile Questionnaire</h3>
+        <div class="skills-card">
+          <div class="form-group"><label>Skilled Batter?</label><select id="batter" onchange="toggleSkillFields()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+          <div class="form-group"><label>Skilled Bowler?</label><select id="bowler" onchange="toggleSkillFields()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+          <div class="form-group"><label>Wicket-Keeper?</label><select id="keeper" onchange="toggleSkillFields()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+        </div>
+        <div id="derived-type-box" class="derived-badge">Derived Player Type: <strong id="derived-type-val">Fielder</strong></div>
+        <button type="submit" class="btn-primary" id="player-submit-btn">Register Player</button>
+      </form>
+
+      <h3>Registered Players List</h3>
+      <table class="data-table" id="players-table">
+        <thead><tr><th>Photo</th><th>Roll No</th><th>Name</th><th>Branch</th><th>Bucket</th><th>Base Price</th><th>Status</th></tr></thead>
+        <tbody id="players-tbody"></tbody>
+      </table>
+    </section>
+
+    <!-- TAB 1.5: FRANCHISE REGISTRATION -->
+    <section id="tab-freg" class="tab-content">
+      <div style="background: #1e293b; padding: 2rem; border-radius: 12px; border: 1px solid #334155; max-width: 800px; margin: 0 auto;">
+        <h2 style="color: #60a5fa; margin-bottom: 1.5rem;">+ Register New Tournament Franchise</h2>
+        <form id="franchise-reg-form" onsubmit="handleFranchiseRegistration(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Select Franchise Slot *</label>
+              <select id="reg-slot-id" required>
+                <option value="1">Franchise Slot 1</option><option value="2">Franchise Slot 2</option><option value="3">Franchise Slot 3</option>
+                <option value="4">Franchise Slot 4</option><option value="5">Franchise Slot 5</option><option value="6">Franchise Slot 6</option>
+                <option value="7">Franchise Slot 7</option><option value="8">Franchise Slot 8</option><option value="9">Franchise Slot 9</option>
+                <option value="10">Franchise Slot 10</option><option value="11">Franchise Slot 11</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Franchise Name *</label><input type="text" id="reg-team-name" required placeholder="e.g. Coastal Warriors" /></div>
+            <div class="form-group"><label>Short Code *</label><input type="text" id="reg-short-code" required placeholder="e.g. CW" maxlength="5" /></div>
+            <div class="form-group"><label>Primary Color / Theme</label><input type="color" id="reg-team-color" value="#3b82f6" style="height: 42px; width: 100%; cursor: pointer;" /></div>
+            <div class="form-group"><label>Initial Purse</label><input type="text" value="1,000 Credits" disabled style="color: #fbbf24; font-weight: bold;" /></div>
+            <div class="form-group"><label>Team Logo Image *</label><input type="file" id="reg-team-logo" accept="image/*" onchange="previewLogoInput(event)" required /></div>
+            <div class="form-group"><label>Secure Bidding Password *</label><input type="password" id="reg-team-password" required placeholder="Password for team portal login" /></div>
+          </div>
+
+          <div style="background: #0f172a; padding: 1rem; border-radius: 8px; border: 1px solid #334155; margin-bottom: 1.5rem;">
+            <h4 style="color: #94a3b8; margin-bottom: 0.75rem;">Staff & Captain Contacts</h4>
+            <div class="form-grid" style="margin-bottom: 0;">
+              <div class="form-group"><label>Faculty Coordinator Name *</label><input type="text" id="reg-coord-name" required placeholder="Coordinator Name" /></div>
+              <div class="form-group"><label>Coordinator Phone *</label><input type="tel" id="reg-coord-phone" required placeholder="Phone number" /></div>
+              <div class="form-group"><label>Captain Name *</label><input type="text" id="reg-captain-name" required placeholder="Captain Name" /></div>
+              <div class="form-group"><label>Captain Phone *</label><input type="tel" id="reg-captain-phone" required placeholder="Phone number" /></div>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; background: #f59e0b; color: #000; font-weight: bold;">Add Franchise</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 2: FRANCHISES -->
+    <section id="tab-franchises" class="tab-content">
+      <h2>Franchise Overview (11 Teams)</h2>
+      <div class="franchise-grid" id="franchise-cards"></div>
+    </section>
+
+    <!-- TAB 3: AUCTION CONSOLE (SECURED) -->
+    <section id="tab-auction" class="tab-content">
+      <h2>Master Live Auction Engine</h2>
+      <div id="scarcity-alert" class="alert-box hidden"></div>
+      <div style="background: #1e293b; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid #3b82f6; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <div><span>Active Category Draw: </span><strong id="active-draw-bucket" style="color: #60a5fa; font-size: 1.1rem;">B3</strong></div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <label style="font-size: 0.85rem; color: #cbd5e1;">Draw Mode:</label>
+          <select id="draw-mode-select" onchange="toggleDrawMode()" style="padding: 0.2rem 0.5rem;"><option value="auto">Auto Random</option><option value="guest">Guest Mode</option></select>
+          <span id="draw-queue-count" style="background: #0f172a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">Available: 0</span>
+        </div>
+      </div>
+      <div class="auction-layout">
+        <div class="lot-card">
+          <h3>Current Lot</h3>
+          <div id="active-lot-details">
+            <p><strong>Player:</strong> <span id="lot-player-name">No Active Lot</span></p>
+            <p><strong>Bucket:</strong> <span id="lot-bucket">-</span></p>
+            <p><strong>Skill/Type:</strong> <span id="lot-player-type" style="color: #38bdf8; font-weight: bold;">-</span></p>
+            <p><strong>Base Price:</strong> <span id="lot-base-price">0</span></p>
+            <p><strong>Current Bid:</strong> <span id="lot-current-price" class="price-tag">0</span></p>
+            <p><strong>Highest Bidder:</strong> <span id="lot-highest-bidder">None</span></p>
+          </div>
+          <div class="timer-box"><span id="timer-count">30</span>s</div>
+          <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;">
+            <button onclick="startTimer()" class="btn-sec">Start Timer</button>
+            <button onclick="pauseTimer()" class="btn-sec">Pause</button>
+            <button onclick="resetTimer()" class="btn-sec">Reset</button>
+          </div>
+          <div class="admin-controls">
+            <div id="guest-input-container" class="hidden" style="margin-bottom: 0.5rem;"><input type="text" id="guest-lot-number" placeholder="Enter Roll/ID" style="width: 100%;" /></div>
+            <button onclick="drawNextPlayer()" class="btn-sec">Draw Next Player</button>
+            <button onclick="skipCurrentPlayer()" class="btn-sec" style="background: #d97706; color: #fff;">Skip Player</button>
+            <button onclick="hammerLot()" class="btn-primary">Hammer (Sell / Unsold)</button>
+            <button onclick="undoLastSale()" class="btn-danger">Undo Last Sale</button>
+          </div>
+        </div>
+        <div class="bidding-panel">
+          <h3>Master Franchise Bidding Controls</h3>
+          <div id="bidding-teams-list" class="bidding-teams-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3.5: FRANCHISE PORTAL LOGIN & BIDDING -->
+    <section id="tab-flogin" class="tab-content">
+      <h2>Franchise Secure Bidding Portal</h2>
+      <div id="f-login-box" style="background: #1e293b; padding: 2rem; border-radius: 8px; max-width: 400px; margin: 2rem auto; border: 1px solid #334155;">
+        <h3>Franchise Login</h3>
+        <div class="form-group"><label>Select Team</label>
+          <select id="login-team-slot">
+            <option value="1">Franchise 1</option><option value="2">Franchise 2</option><option value="3">Franchise 3</option>
+            <option value="4">Franchise 4</option><option value="5">Franchise 5</option><option value="6">Franchise 6</option>
+            <option value="7">Franchise 7</option><option value="8">Franchise 8</option><option value="9">Franchise 9</option>
+            <option value="10">Franchise 10</option><option value="11">Franchise 11</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Team Password</label><input type="password" id="login-team-pass" placeholder="Enter Password" /></div>
+        <button class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="loginFranchisePortal()">Login to Bidding Screen</button>
+      </div>
+
+      <div id="f-dashboard-box" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #111827; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+          <h3 id="portal-team-title" style="margin: 0; color: #3b82f6;">Team Dashboard</h3>
+          <button class="btn-danger" onclick="logoutFranchisePortal()">Logout Portal</button>
+        </div>
+        <div class="auction-layout">
+          <div class="lot-card">
+            <h3>Active Auction Lot</h3>
+            <div id="portal-lot-details">
+              <p><strong>Player:</strong> <span id="portal-lot-name">Waiting for draw...</span></p>
+              <p><strong>Bucket:</strong> <span id="portal-lot-bucket">-</span></p>
+              <p><strong>Skill/Type:</strong> <span id="portal-lot-type" style="color: #38bdf8; font-weight: bold;">-</span></p>
+              <p><strong>Current Price:</strong> <span id="portal-lot-price" class="price-tag">0</span></p>
+              <p><strong>Leading Bidder:</strong> <span id="portal-lot-bidder">None</span></p>
+            </div>
+            <div class="timer-box"><span id="portal-timer-count">30</span>s</div>
+          </div>
+          <div class="bidding-panel">
+            <h3>Your Team Bidding Actions</h3>
+            <div style="background: #1e293b; padding: 1.5rem; border-radius: 8px; border: 1px solid #334155;">
+              <p>Purse Left: <strong id="portal-team-purse">1000</strong> Credits</p>
+              <p>Max Permissible Bid: <strong id="portal-team-maxbid">0</strong> Credits</p>
+              <button class="btn-primary" style="width: 100%; font-size: 1.2rem; padding: 1rem; margin-top: 1rem;" onclick="placePortalBid()">PLACE BID (+Increment)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: PROJECTOR VIEW -->
+    <section id="tab-projector" class="tab-content">
+      <div class="projector-screen">
+        <div class="projector-layout">
+          <div class="projector-left">
+            <div class="photo-placeholder" id="proj-photo-container">
+              <img id="proj-photo-img" src="" alt="Player Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: none;" />
+              <span id="proj-photo-fallback">PLAYER PHOTO</span>
+            </div>
+            <div id="proj-stats-box" style="margin-top: 1rem; text-align: left; font-size: 0.9rem; background: #0f172a; padding: 0.75rem; border-radius: 6px;">
+              <p><strong>Type/Skill:</strong> <span id="proj-type">-</span></p>
+              <p><strong>CricHeroes:</strong> <span id="proj-cricheroes">Not Linked</span></p>
+            </div>
+          </div>
+          <div class="projector-center">
+            <h1 id="proj-player-name">WAITING FOR AUCTION TO START</h1>
+            <div class="proj-details">
+              <div><span class="lbl">BUCKET</span><h2 id="proj-bucket">-</h2></div>
+              <div><span class="lbl">CURRENT BID</span><h2 id="proj-price">0</h2></div>
+              <div><span class="lbl">LEADING BIDDER</span><h2 id="proj-bidder">None</h2></div>
+            </div>
+            <div class="proj-timer" id="proj-timer">30</div>
+          </div>
+        </div>
+        <div class="franchise-status-bar" id="proj-franchise-bar"></div>
+      </div>
+    </section>
+
+    <!-- TAB 5: PUBLIC VIEW -->
+    <section id="tab-public" class="tab-content">
+      <h2>Public Live Leaderboard</h2>
+      <div class="public-grid" id="public-franchise-list"></div>
+    </section>
+
+    <!-- TAB 6: ADMIN PORTAL -->
+    <section id="tab-admin" class="tab-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2>Admin Management Portal</h2>
+        <div>
+          <button class="btn-sec" style="background: #8b5cf6; font-weight: bold;" onclick="runAppendixTests()">🧪 Run Appendix Test Suite</button>
+          <button class="btn-sec" style="background: #0284c7;" onclick="triggerRound2()">Initiate Round 2</button>
+          <button class="btn-sec" style="background: #16a34a;" onclick="exportSpreadsheet()">Export Spreadsheet</button>
+          <button class="btn-danger" style="background: #b91c1c;" onclick="triggerTotalReset()">⚠️ Total Database Reset</button>
+          <button class="btn-danger" onclick="logoutAdmin()">Logout</button>
+        </div>
+      </div>
+      <div style="margin-bottom: 2rem;">
+        <h3>Franchise Management & Removal</h3>
+        <div id="admin-franchise-grid" class="franchise-grid" style="margin-top: 1rem;"></div>
+      </div>
+      <div>
+        <h3>Master Player Database (Edit & Delete Enabled)</h3>
+        <table class="data-table">
+          <thead><tr><th>Photo</th><th>Roll No</th><th>Name</th><th>Phone</th><th>Branch</th><th>Bucket</th><th>Base Price</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="admin-players-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- APPENDIX TEST RESULTS OVERLAY MODAL -->
+  <div id="appendix-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99999; display: flex; justify-content: center; align-items: center;">
+    <div style="background: #1e293b; width: 90%; max-width: 900px; max-height: 85vh; border-radius: 12px; border: 2px solid #3b82f6; display: flex; flex-direction: column; position: relative; overflow: hidden;">
+      <div style="padding: 1.25rem 1.5rem; background: #0f172a; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: #60a5fa; margin: 0;">Appendix A Acceptance Test Suite Results (31 Cases)</h3>
+        <button onclick="closeAppendixModal()" style="background: #ef4444; color: #fff; border: none; font-size: 1.25rem; font-weight: bold; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+      </div>
+      <div id="appendix-results-body" style="padding: 1.5rem; overflow-y: auto; flex: 1;"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div id="admin-login-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+    <div style="background: #1e293b; padding: 2rem; border-radius: 8px; width: 320px; border: 1px solid #334155;">
+      <h3 style="margin-top: 0;">Admin Login</h3>
+      <div class="form-group"><label>Username</label><input type="text" id="admin-user-input" value="avanthi@acc" /></div>
+      <div class="form-group"><label>Password</label><input type="password" id="admin-pass-input" placeholder="••••••••" /></div>
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button class="btn-primary" style="flex: 1;" onclick="submitAdminLogin()">Login</button>
+        <button class="btn-sec" style="flex: 1;" onclick="closeAdminModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE AUCTION CONSOLE LOGIN MODAL -->
+  <div id="auction-login-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+    <div style="background: #1e293b; padding: 2rem; border-radius: 8px; width: 320px; border: 1px solid #334155;">
+      <h3 style="margin-top: 0;">Live Auction Console Login</h3>
+      <div class="form-group"><label>Username</label><input type="text" id="auction-user-input" value="avanthi@acc" /></div>
+      <div class="form-group"><label>Password</label><input type="password" id="auction-pass-input" placeholder="••••••••" /></div>
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button class="btn-primary" style="flex: 1;" onclick="submitAuctionLogin()">Login</button>
+        <button class="btn-sec" style="flex: 1;" onclick="closeAuctionModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

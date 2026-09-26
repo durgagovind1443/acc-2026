@@ -1,0 +1,75 @@
+:root {
+  --bg-color: #0b0f19;
+  --card-bg: #1e293b;
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
+  --danger-color: #ef4444;
+  --success-color: #22c55e;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --admin-orange: #f59e0b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+
+.navbar { background-color: #111827; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+.logo h1 { font-size: 1.3rem; color: var(--text-main); }
+.logo .subtext { font-size: 0.8rem; color: var(--text-muted); }
+.nav-tabs { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.tab-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease; }
+.tab-btn:hover { background: #1e293b; color: var(--text-main); }
+.tab-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+
+.admin-btn-animated { background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: #fff !important; border: 2px solid #fbbf24 !important; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
+.admin-btn-animated:hover { background: linear-gradient(135deg, #fbbf24, #f59e0b) !important; }
+
+.container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.hidden { display: none !important; }
+
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+label { font-size: 0.85rem; color: var(--text-muted); }
+input, select { background: #0f172a; border: 1px solid var(--border-color); color: var(--text-main); padding: 0.65rem; border-radius: 6px; font-size: 0.95rem; }
+input:focus, select:focus { outline: none; border-color: var(--accent-color); }
+.hint-text { font-size: 0.75rem; color: var(--text-muted); }
+
+.skills-card { background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.derived-badge { background: #1e1b4b; border: 1px solid #4338ca; color: #a5b4fc; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1.5rem; }
+
+.btn-primary { background: var(--accent-color); color: #fff; border: none; padding: 0.65rem 1.25rem; border-radius: 6px; cursor: pointer; font-weight: 500; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-sec { background: #475569; color: #fff; border: none; padding: 0.65rem 1.25rem; border-radius: 6px; cursor: pointer; }
+.btn-danger { background: var(--danger-color); color: #fff; border: none; padding: 0.65rem 1.25rem; border-radius: 6px; cursor: pointer; }
+.btn-sm-danger { background: var(--danger-color); color: #fff; border: none; padding: 0.35rem 0.65rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+
+.data-table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: var(--card-bg); border-radius: 8px; overflow: hidden; }
+.data-table th, .data-table td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; vertical-align: middle; }
+.data-table th { background: #111827; color: var(--text-muted); }
+
+.franchise-grid, .public-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+.f-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; position: relative; }
+.f-card h3 { color: var(--accent-color); margin-bottom: 0.5rem; }
+
+.auction-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-top: 1rem; }
+.lot-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; }
+.price-tag { font-size: 1.5rem; color: var(--success-color); font-weight: bold; }
+.timer-box { background: #0f172a; border: 2px solid var(--accent-color); border-radius: 50%; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 1.5rem auto; }
+.admin-controls { display: flex; flex-direction: column; gap: 0.5rem; }
+.bidding-teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.team-bid-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; }
+
+.projector-screen { background: #030712; border: 2px solid var(--accent-color); border-radius: 12px; padding: 2rem; text-align: center; position: relative; }
+.projector-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem; }
+.photo-placeholder { width: 100%; height: 220px; background: #1e293b; border: 2px dashed var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: bold; border-radius: 8px; overflow: hidden; }
+.proj-details { display: flex; justify-content: space-around; margin: 1.5rem 0; }
+.proj-timer { font-size: 3.5rem; font-weight: bold; color: var(--accent-color); }
+.franchise-status-bar { display: grid; grid-template-columns: repeat(11, 1fr); gap: 0.25rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+.f-status-card { background: #111827; padding: 0.4rem; border-radius: 4px; font-size: 0.7rem; border: 1px solid var(--border-color); }
+.f-status-card.in-play { border-color: var(--success-color); color: #86efac; }
+.f-status-card.blocked { border-color: var(--danger-color); color: #fca5a5; }
+
+.alert-box { background: #7f1d1d; color: #fca5a5; border: 1px solid #ef4444; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; font-weight: bold; }
