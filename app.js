@@ -1,5 +1,5 @@
 /* ==========================================================================
-   AVANTHI CRICKET CARNIVAL 2026 - COMPLETE FIREBASE REALTIME AUCTION ENGINE
+   AVANTHI CRICKET CARNIVAL - MULTI-YEAR DYNAMIC AUCTION ENGINE
    ========================================================================== */
 
 if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
@@ -12,7 +12,7 @@ const franchisesRef = db.ref('franchises');
 const auctionRef = db.ref('currentAuction');
 const auditLogRef = db.ref('auditLog');
 
-const CURRENT_ACADEMIC_YEAR = 2026;
+let CURRENT_ACADEMIC_YEAR = 2026;
 const CATEGORY_DRAW_ORDER = ['B3', 'B4', 'B2', 'B5', 'B1', 'PG'];
 let registeredPlayers = [];
 let franchises = [];
@@ -35,6 +35,17 @@ function getSquadArray(squad) {
   if (!squad) return [];
   if (Array.isArray(squad)) return squad;
   return Object.values(squad);
+}
+
+function changeAcademicYear() {
+  const selYear = document.getElementById('admin-year-select').value;
+  CURRENT_ACADEMIC_YEAR = parseInt(selYear, 10);
+  const titleElem = document.getElementById('brand-title');
+  if (titleElem) {
+    titleElem.innerText = `Avanthi Cricket Carnival ${CURRENT_ACADEMIC_YEAR}`;
+  }
+  alert(`Academic Year successfully switched to ${CURRENT_ACADEMIC_YEAR}!`);
+  updateDrawQueueDisplay();
 }
 
 function previewPhotoInput(event) {
@@ -106,6 +117,7 @@ function initFranchisesInDB() {
       coordPhone: "",
       captain: "",
       captainPhone: "",
+      password: "pass",
       isRegistered: false,
       purse: 1000,
       squad: [],
@@ -239,19 +251,17 @@ function placePortalBid() {
 function parseRollNumber(roll) {
   if (!roll) return { valid: false };
   roll = roll.trim().toUpperCase();
-  // Support both regular (811) and lateral entry (815)
   const btechRegRegex = /^(\d{2})81([15])[A-Z](\d{2})\d+$/;
   const branchMap = { "02": "EEE", "03": "ME", "04": "ECE", "05": "CSE", "42": "CSM", "44": "CSD" };
   const match = roll.match(btechRegRegex);
   if (!match) return { valid: false };
   const yy = parseInt(match[1], 10) + 2000;
-  const entryType = match[2]; // "1" for regular, "5" for lateral entry
+  const entryType = match[2];
   let yearOfStudy = (CURRENT_ACADEMIC_YEAR - yy) + 1;
   if (entryType === "5") {
-    yearOfStudy += 1; // Lateral entry starts directly at 2nd year
+    yearOfStudy += 1;
   }
   return { valid: true, roll, yearOfStudy, branch: branchMap[match[3]] || "CSE", bucket: `B${yearOfStudy}` };
-
 }
 
 function calculateMaxBid(purse, squadCount, unfilledMandatoryBuckets) {
@@ -587,21 +597,90 @@ function undoLastSale() {
 }
 
 function triggerTotalReset() {
-  if (confirm("⚠️ WARNING: Erase all data and reset all 11 franchises?")) {
+  const pwd = prompt("Enter Master Password to reset database (ACC@2026):");
+  if (pwd === "ACC@2026") {
     playersRef.remove(); auctionRef.remove(); auditLogRef.remove();
     initFranchisesInDB();
     alert("System completely reset.");
+  } else if (pwd !== null) {
+    alert("Incorrect Master Password!");
   }
 }
 
-function removeFranchiseTeam(slotId) {
-  if (confirm(`Reset Franchise Slot ${slotId} to unregistered default state?`)) {
-    franchisesRef.child(`f${slotId}`).set({
-      id: slotId, name: `Franchise ${slotId} (Not Registered)`, shortCode: `F${slotId}`,
-      color: "#3b82f6", logoUrl: "", coordinator: "", coordPhone: "", captain: "", captainPhone: "",
-      isRegistered: false, purse: 1000, squad: [], bucketsFilled: { B1: 0, B2: 0, B3: 0, B4: 0, B5: 0 }
-    });
+function openReferencePlayerModal() {
+  document.getElementById('reference-player-modal').classList.remove('hidden');
+}
+function closeReferencePlayerModal() {
+  document.getElementById('reference-player-modal').classList.add('hidden');
+}
+function handleReferencePlayerSubmit(e) {
+  e.preventDefault();
+  const roll = document.getElementById('ref-roll').value.trim();
+  const name = document.getElementById('ref-name').value.trim();
+  const basePrice = parseInt(document.getElementById('ref-price').value, 10);
+  const parsed = parseRollNumber(roll);
+  
+  const playerId = 'ref_' + Date.now();
+  const player = {
+    id: playerId, roll: parsed.valid ? parsed.roll : roll, name,
+    mobile: "9999999999", photoUrl: "", cricHeroesUrl: "https://cricheroes.in",
+    cricHeroesMobile: "9999999999", branch: parsed.valid ? parsed.branch : "CSE",
+    year: parsed.valid ? parsed.yearOfStudy : 1, bucket: parsed.valid ? parsed.bucket : "B1",
+    type: "All-rounder", basePrice, status: "Paid", auctionStatus: "Available"
+  };
+
+  playersRef.child(playerId).set(player).then(() => {
+    alert("Reference player added successfully!");
+    closeReferencePlayerModal();
+  });
+}
+
+function openFranchiseEditModal(slotId) {
+  const f = franchises.find(item => item.id === slotId);
+  if (!f) return;
+  document.getElementById('edit-slot-id').value = f.id;
+  document.getElementById('edit-team-name').value = f.name;
+  document.getElementById('edit-short-code').value = f.shortCode;
+  document.getElementById('edit-purse').value = f.purse;
+  document.getElementById('edit-coord-name').value = f.coordinator;
+  document.getElementById('edit-coord-phone').value = f.coordPhone;
+  document.getElementById('edit-captain-name').value = f.captain;
+  document.getElementById('edit-captain-phone').value = f.captainPhone;
+  document.getElementById('edit-team-password').value = f.password || "pass";
+
+  const squad = getSquadArray(f.squad);
+  const squadBox = document.getElementById('edit-squad-container');
+  if (squad.length > 0) {
+    squadBox.innerHTML = squad.map(p => `<div style="padding: 4px 0; border-bottom: 1px solid #334155;">${p.name} [${p.type}] (${p.bucket}) - Price: ${p.soldPrice}</div>`).join('');
+  } else {
+    squadBox.innerHTML = `<p style="color: #94a3b8; font-size: 0.85rem;">No players bought yet.</p>`;
   }
+
+  document.getElementById('franchise-edit-modal').classList.remove('hidden');
+}
+
+function closeFranchiseEditModal() {
+  document.getElementById('franchise-edit-modal').classList.add('hidden');
+}
+
+function saveFranchiseEdit(e) {
+  e.preventDefault();
+  const slotId = document.getElementById('edit-slot-id').value;
+  const name = document.getElementById('edit-team-name').value.trim();
+  const shortCode = document.getElementById('edit-short-code').value.trim();
+  const purse = parseInt(document.getElementById('edit-purse').value, 10);
+  const coordinator = document.getElementById('edit-coord-name').value.trim();
+  const coordPhone = document.getElementById('edit-coord-phone').value.trim();
+  const captain = document.getElementById('edit-captain-name').value.trim();
+  const captainPhone = document.getElementById('edit-captain-phone').value.trim();
+  const password = document.getElementById('edit-team-password').value.trim();
+
+  franchisesRef.child(`f${slotId}`).update({
+    name, shortCode, purse, coordinator, coordPhone, captain, captainPhone, password, isRegistered: true
+  }).then(() => {
+    alert("Franchise updated successfully!");
+    closeFranchiseEditModal();
+  });
 }
 
 function renderAdminFranchises() {
@@ -611,7 +690,7 @@ function renderAdminFranchises() {
     <div class="f-card">
       <h3>${f.name}</h3>
       <p>${f.isRegistered ? 'Registered' : 'Not Registered'}</p>
-      <button class="btn-sm-danger" style="margin-top: 0.5rem;" onclick="removeFranchiseTeam(${f.id})">Remove / Reset Team</button>
+      <button class="btn-primary" style="margin-top: 0.5rem; width: 100%; font-size: 0.85rem;" onclick="openFranchiseEditModal(${f.id})">Edit Team & Squad</button>
     </div>
   `).join('');
 }
