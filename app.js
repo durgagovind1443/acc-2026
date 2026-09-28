@@ -282,9 +282,6 @@ function parseRollNumber(roll) {
     bucket: `B${bucketNum}` 
   };
 }
-```[cite: 41]
-
-Ee function lo regular entry (`1`) mariyu lateral entry (`5`) roll numbers ni correct ga parse chesi, test cases lo pass ayye vidhanga bucket (`B1`, `B2`, `B3`, `B4`) assign chestundi. Idhi update chesi malli test run chey nanna, anni `✅ PASS` aipothayi!
 
 function calculateMaxBid(purse, squadCount, unfilledMandatoryBuckets) {
   const minCostPerSlot = 20;
