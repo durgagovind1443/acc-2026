@@ -72,36 +72,58 @@
           </div>
         </div>
 
-        <h3>Skill Profile Questionnaire</h3>
-        <div class="skills-card">
-          <div class="form-group"><label>Skilled Batter?</label><select id="batter" onchange="toggleSkillFields()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-          <div class="form-group"><label>Skilled Bowler?</label><select id="bowler" onchange="toggleSkillFields()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-          <div class="form-group"><label>Wicket-Keeper?</label><select id="keeper" onchange="toggleSkillFields()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+        <h3>Detailed Cricket Skill Matrix (As per Guidelines)</h3>
+        <div class="skills-card" style="grid-template-columns: repeat(2, 1fr);">
+          <!-- Section A: Batting -->
+          <div class="form-group"><label>Skilled Batter? *</label><select id="skill-batter" onchange="toggleDetailedSkills()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+          <div class="form-group" id="group-batting-style" style="display:none;"><label>Batting Style</label><select id="skill-batting-style"><option value="Strike rotator">Strike rotator</option><option value="Aggressive batter">Aggressive batter</option><option value="Big hitter">Big hitter</option></select></div>
+          <div class="form-group" id="group-batting-pos" style="display:none;"><label>Preferred Batting Position</label><select id="skill-batting-pos"><option value="Opener">Opener</option><option value="Top order">Top order</option><option value="Middle order">Middle order</option><option value="Finisher">Finisher</option></select></div>
+          <div class="form-group"><label>Batting Arm *</label><select id="skill-batting-arm"><option value="Right">Right</option><option value="Left">Left</option></select></div>
+
+          <!-- Section B: Bowling -->
+          <div class="form-group"><label>Skilled Bowler? *</label><select id="skill-bowler" onchange="toggleDetailedSkills()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+          <div class="form-group" id="group-bowling-arm" style="display:none;"><label>Bowling Arm</label><select id="skill-bowling-arm"><option value="Right">Right</option><option value="Left">Left</option></select></div>
+          <div class="form-group" id="group-bowling-type" style="display:none;"><label>Bowling Type</label><select id="skill-bowling-type" onchange="toggleDetailedSkills()"><option value="Fast">Fast</option><option value="Spin">Spin</option></select></div>
+          <div class="form-group" id="group-pace-variety" style="display:none;"><label>Pace Variety</label><select id="skill-pace-variety"><option value="Swing">Swing</option><option value="Seam">Seam</option><option value="Express pace">Express pace</option></select></div>
+          <div class="form-group" id="group-spin-variety" style="display:none;"><label>Spin Variety</label><select id="skill-spin-variety"><option value="Off-spin">Off-spin</option><option value="Leg-spin">Leg-spin</option><option value="Left-arm orthodox">Left-arm orthodox</option><option value="Left-arm wrist spin">Left-arm wrist spin</option></select></div>
+          <div class="form-group" id="group-bowling-role" style="display:none;"><label>Bowling Role (Select All Apply)</label>
+            <select id="skill-bowling-role" multiple style="height: 80px;">
+              <option value="Powerplay specialist">Powerplay specialist</option>
+              <option value="Economical bowler">Economical bowler</option>
+              <option value="Death-over specialist">Death-over specialist</option>
+              <option value="Wicket-taking bowler">Wicket-taking bowler</option>
+            </select>
+          </div>
+
+          <!-- Section C: Fielding & Wicket-keeping -->
+          <div class="form-group"><label>Are you a Wicket-Keeper? *</label><select id="skill-keeper" onchange="toggleDetailedSkills()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+          <div class="form-group" id="group-fielding-zone"><label>Fielding Zone</label><select id="skill-fielding-zone"><option value="Infield">Infield</option><option value="Outfield">Outfield</option></select></div>
+          <div class="form-group" id="group-fielding-pos"><label>Preferred Fielding Position</label><select id="skill-fielding-pos"><option value="Slip">Slip</option><option value="Point">Point</option><option value="Cover">Cover</option><option value="Mid-off">Mid-off</option><option value="Mid-on">Mid-on</option><option value="Mid-wicket">Mid-wicket</option><option value="Square leg">Square leg</option><option value="Third man">Third man</option><option value="Fine leg">Fine leg</option><option value="Long-on">Long-on</option><option value="Long-off">Long-off</option><option value="Deep mid-wicket">Deep mid-wicket</option></select></div>
+
+          <!-- Section D: Experience -->
+          <div class="form-group"><label>Highest Level Played *</label><select id="skill-highest-level"><option value="District or above">District or above</option><option value="Inter-college">Inter-college</option><option value="School or intra-college">School or intra-college</option><option value="Recreational only">Recreational only</option></select></div>
+          <div class="form-group"><label>Played in previous ACC edition? *</label><select id="skill-prev-acc" onchange="toggleDetailedSkills()"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+          <div class="form-group hidden" id="group-prev-acc-team"><label>Previous ACC Team Name</label><input type="text" id="skill-prev-acc-team" placeholder="Team Name" /></div>
         </div>
+
         <div id="derived-type-box" class="derived-badge">Derived Player Type: <strong id="derived-type-val">Fielder</strong></div>
         <button type="submit" class="btn-primary" id="player-submit-btn">Register Player</button>
       </form>
-
-      <h3>Registered Players List</h3>
-      <table class="data-table" id="players-table">
-        <thead><tr><th>Photo</th><th>Roll No</th><th>Name</th><th>Branch</th><th>Bucket</th><th>Base Price</th><th>Status</th></tr></thead>
-        <tbody id="players-tbody"></tbody>
-      </table>
     </section>
 
     <!-- TAB 1.5: FRANCHISE REGISTRATION -->
     <section id="tab-freg" class="tab-content">
       <div style="background: #1e293b; padding: 2rem; border-radius: 12px; border: 1px solid #334155; max-width: 800px; margin: 0 auto;">
-        <h2 style="color: #60a5fa; margin-bottom: 1.5rem;">+ Register New Tournament Franchise</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h2 style="color: #60a5fa; margin: 0;">+ Register New Tournament Franchise</h2>
+          <span id="available-slots-badge" style="background: #0f172a; padding: 0.4rem 0.8rem; border-radius: 6px; color: #fbbf24; font-weight: bold; border: 1px solid #334155;">Available Slots: 11</span>
+        </div>
         <form id="franchise-reg-form" onsubmit="handleFranchiseRegistration(event)">
           <div class="form-grid">
             <div class="form-group">
-              <label>Select Franchise Slot *</label>
+              <label>Select Unregistered Franchise Slot *</label>
               <select id="reg-slot-id" required>
-                <option value="1">Franchise Slot 1</option><option value="2">Franchise Slot 2</option><option value="3">Franchise Slot 3</option>
-                <option value="4">Franchise Slot 4</option><option value="5">Franchise Slot 5</option><option value="6">Franchise Slot 6</option>
-                <option value="7">Franchise Slot 7</option><option value="8">Franchise Slot 8</option><option value="9">Franchise Slot 9</option>
-                <option value="10">Franchise Slot 10</option><option value="11">Franchise Slot 11</option>
+                <!-- Dynamically populated available slots -->
               </select>
             </div>
             <div class="form-group"><label>Franchise Name *</label><input type="text" id="reg-team-name" required placeholder="e.g. Coastal Warriors" /></div>
@@ -113,22 +135,23 @@
           </div>
 
           <div style="background: #0f172a; padding: 1rem; border-radius: 8px; border: 1px solid #334155; margin-bottom: 1.5rem;">
-            <h4 style="color: #94a3b8; margin-bottom: 0.75rem;">Staff & Captain Contacts</h4>
+            <h4 style="color: #94a3b8; margin-bottom: 0.75rem;">Staff & Leadership Contacts</h4>
             <div class="form-grid" style="margin-bottom: 0;">
               <div class="form-group"><label>Faculty Coordinator Name *</label><input type="text" id="reg-coord-name" required placeholder="Coordinator Name" /></div>
               <div class="form-group"><label>Coordinator Phone *</label><input type="tel" id="reg-coord-phone" required placeholder="Phone number" /></div>
-              <div class="form-group"><label>Captain Name *</label><input type="text" id="reg-captain-name" required placeholder="Captain Name" /></div>
-              <div class="form-group"><label>Captain Phone *</label><input type="tel" id="reg-captain-phone" required placeholder="Phone number" /></div>
+              <div class="form-group"><label>Team Captain (Select from Registered Players) *</label><select id="reg-captain-select" required></select></div>
+              <div class="form-group"><label>Team Vice-Captain (Select from Registered Players) *</label><select id="reg-vc-select" required></select></div>
+              <div class="form-group" style="grid-column: span 2;"><label>Declared Reference Players (Roll Nos separated by comma)</label><input type="text" id="reg-ref-players" placeholder="e.g. 26811A0501, 26811A0502" /></div>
             </div>
           </div>
-          <button type="submit" class="btn-primary" style="width: 100%; background: #f59e0b; color: #000; font-weight: bold;">Add Franchise</button>
+          <button type="submit" class="btn-primary" style="width: 100%; background: #f59e0b; color: #000; font-weight: bold;">Register Franchise</button>
         </form>
       </div>
     </section>
 
     <!-- TAB 2: FRANCHISES -->
     <section id="tab-franchises" class="tab-content">
-      <h2>Franchise Overview (11 Teams)</h2>
+      <h2>Franchise Overview</h2>
       <div class="franchise-grid" id="franchise-cards"></div>
     </section>
 
@@ -136,14 +159,18 @@
     <section id="tab-auction" class="tab-content">
       <h2>Master Live Auction Engine</h2>
       <div id="scarcity-alert" class="alert-box hidden"></div>
-      <div style="background: #1e293b; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid #3b82f6; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+      
+      <!-- View Available Players Button & Modal Toggle -->
+      <div style="background: #1e293b; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid #3b82f6; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <div><span>Active Category Draw: </span><strong id="active-draw-bucket" style="color: #60a5fa; font-size: 1.1rem;">B3</strong></div>
         <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="btn-sec" style="background: #0284c7;" onclick="openAvailablePlayersModal()">👁️ View Available Players (Serial List)</button>
           <label style="font-size: 0.85rem; color: #cbd5e1;">Draw Mode:</label>
-          <select id="draw-mode-select" onchange="toggleDrawMode()" style="padding: 0.2rem 0.5rem;"><option value="auto">Auto Random</option><option value="guest">Guest Mode</option></select>
+          <select id="draw-mode-select" onchange="toggleDrawMode()" style="padding: 0.2rem 0.5rem;"><option value="auto">Auto Random</option><option value="guest">Guest / Serial Number Mode</option></select>
           <span id="draw-queue-count" style="background: #0f172a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">Available: 0</span>
         </div>
       </div>
+
       <div class="auction-layout">
         <div class="lot-card">
           <h3>Current Lot</h3>
@@ -162,7 +189,10 @@
             <button onclick="resetTimer()" class="btn-sec">Reset</button>
           </div>
           <div class="admin-controls">
-            <div id="guest-input-container" class="hidden" style="margin-bottom: 0.5rem;"><input type="text" id="guest-lot-number" placeholder="Enter Roll/ID" style="width: 100%;" /></div>
+            <div id="guest-input-container" class="hidden" style="margin-bottom: 0.5rem;">
+              <input type="number" id="guest-serial-number" placeholder="Enter Serial Number from Available List (e.g. 1, 2...)" style="width: 100%; margin-bottom: 0.4rem;" />
+              <button onclick="drawPlayerBySerialNumber()" class="btn-sec" style="background: #16a34a; width: 100%;">Select Player by Serial #</button>
+            </div>
             <button onclick="drawNextPlayer()" class="btn-sec">Draw Next Player</button>
             <button onclick="skipCurrentPlayer()" class="btn-sec" style="background: #d97706; color: #fff;">Skip Player</button>
             <button onclick="hammerLot()" class="btn-primary">Hammer (Sell / Unsold)</button>
@@ -178,7 +208,7 @@
 
     <!-- TAB 3.5: FRANCHISE PORTAL LOGIN & BIDDING -->
     <section id="tab-flogin" class="tab-content">
-      <h2>Franchise Secure Bidding Portal</h2>
+      <h2>Franchise Secure Bidding & Management Portal</h2>
       <div id="f-login-box" style="background: #1e293b; padding: 2rem; border-radius: 8px; max-width: 400px; margin: 2rem auto; border: 1px solid #334155;">
         <h3>Franchise Login</h3>
         <div class="form-group"><label>Select Team</label>
@@ -190,13 +220,16 @@
           </select>
         </div>
         <div class="form-group"><label>Team Password</label><input type="password" id="login-team-pass" placeholder="Enter Password" /></div>
-        <button class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="loginFranchisePortal()">Login to Bidding Screen</button>
+        <button class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="loginFranchisePortal()">Login to Portal</button>
       </div>
 
       <div id="f-dashboard-box" class="hidden">
         <div style="display: flex; justify-content: space-between; align-items: center; background: #111827; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
           <h3 id="portal-team-title" style="margin: 0; color: #3b82f6;">Team Dashboard</h3>
-          <button class="btn-danger" onclick="logoutFranchisePortal()">Logout Portal</button>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-sec" onclick="openFranchiseSelfEditModal()">⚙️ Team Edit (Captain/VC)</button>
+            <button class="btn-danger" onclick="logoutFranchisePortal()">Logout Portal</button>
+          </div>
         </div>
         <div class="auction-layout">
           <div class="lot-card">
@@ -261,7 +294,7 @@
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <h2>Admin Management Portal</h2>
         <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-          <label style="color: #60a5fa; font-weight: bold;">Select Academic Year:</label>
+          <label style="color: #60a5fa; font-weight: bold;">Academic Year Isolation:</label>
           <select id="admin-year-select" onchange="changeAcademicYear()" style="padding: 0.4rem; background: #1e293b; color: #fff; border-radius: 4px;">
             <option value="2026">2026</option>
             <option value="2027">2027</option>
@@ -282,7 +315,7 @@
         <div id="admin-franchise-grid" class="franchise-grid" style="margin-top: 1rem;"></div>
       </div>
       <div>
-        <h3>Master Player Database (Edit & Delete Enabled)</h3>
+        <h3>Master Player Database for Year <span id="admin-display-year">2026</span></h3>
         <table class="data-table">
           <thead><tr><th>Photo</th><th>Roll No</th><th>Name</th><th>Phone</th><th>Branch</th><th>Bucket</th><th>Base Price</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="admin-players-tbody"></tbody>
@@ -291,20 +324,37 @@
     </section>
   </main>
 
+  <!-- AVAILABLE PLAYERS MODAL (SERIAL NUMBER LIST) -->
+  <div id="available-players-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+    <div style="background: #1e293b; padding: 2rem; border-radius: 12px; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; border: 2px solid #3b82f6;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="color: #60a5fa; margin: 0;">Available Players Serialized Queue</h3>
+        <button class="btn-danger" onclick="closeAvailablePlayersModal()">Close &times;</button>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Serial #</th><th>Roll No</th><th>Name</th><th>Branch</th><th>Bucket</th><th>Type</th><th>Base Price</th></tr></thead>
+        <tbody id="available-players-modal-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- FRANCHISE EDIT MODAL -->
   <div id="franchise-edit-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999;">
     <div style="background: #1e293b; padding: 2rem; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; border: 2px solid #3b82f6;">
-      <h3 style="color: #60a5fa; margin-top: 0;" id="edit-modal-title">Edit Franchise Details</h3>
+      <h3 style="color: #60a5fa; margin-top: 0;">Edit Franchise Details</h3>
       <form id="franchise-edit-form" onsubmit="saveFranchiseEdit(event)">
         <input type="hidden" id="edit-slot-id" />
         <div class="form-group"><label>Franchise Name</label><input type="text" id="edit-team-name" required /></div>
         <div class="form-group"><label>Short Code</label><input type="text" id="edit-short-code" required /></div>
         <div class="form-group"><label>Purse</label><input type="number" id="edit-purse" required /></div>
+        <div class="form-group"><label>Captain & Vice-Captain</label>
+          <div style="display:flex; gap:0.5rem;">
+            <select id="edit-captain-select" style="flex:1;"></select>
+            <select id="edit-vc-select" style="flex:1;"></select>
+          </div>
+        </div>
         <div class="form-group"><label>Coordinator Name & Phone</label>
           <div style="display:flex; gap:0.5rem;"><input type="text" id="edit-coord-name" placeholder="Name" /><input type="tel" id="edit-coord-phone" placeholder="Phone" /></div>
-        </div>
-        <div class="form-group"><label>Captain Name & Phone</label>
-          <div style="display:flex; gap:0.5rem;"><input type="text" id="edit-captain-name" placeholder="Name" /><input type="tel" id="edit-captain-phone" placeholder="Phone" /></div>
         </div>
         <div class="form-group"><label>Password</label><input type="text" id="edit-team-password" required /></div>
         
@@ -329,6 +379,8 @@
         <div class="form-group"><label>Sample Roll No</label><input type="text" id="ref-roll" value="26811A0599" required /></div>
         <div class="form-group"><label>Player Name</label><input type="text" id="ref-name" value="Sample Player" required /></div>
         <div class="form-group"><label>Base Price</label><input type="number" id="ref-price" value="50" required /></div>
+        <div class="form-group"><label>Referred By (Franchise/Name)</label><input type="text" id="ref-by-name" placeholder="Referrer Name" required /></div>
+        <div class="form-group"><label>Referrer Phone Number</label><input type="tel" id="ref-by-phone" placeholder="Phone" required /></div>
         <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
           <button class="btn-primary" type="submit" style="flex: 1; background: #10b981;">Add Reference Player</button>
           <button class="btn-sec" type="button" style="flex: 1;" onclick="closeReferencePlayerModal()">Cancel</button>
