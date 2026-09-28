@@ -40,14 +40,10 @@ function getSquadArray(squad) {
 function changeAcademicYear() {
   const selYear = document.getElementById('admin-year-select').value;
   CURRENT_ACADEMIC_YEAR = parseInt(selYear, 10);
-  const titleElem = document.getElementById('brand-title');
-  if (titleElem) {
-    titleElem.innerText = `Avanthi Cricket Carnival ${CURRENT_ACADEMIC_YEAR}`;
-  }
   const dispYear = document.getElementById('admin-display-year');
   if (dispYear) dispYear.innerText = CURRENT_ACADEMIC_YEAR;
   
-  alert(`Academic Year successfully switched to ${CURRENT_ACADEMIC_YEAR}! Database isolated.`);
+  alert(`Admin view academic year switched to ${CURRENT_ACADEMIC_YEAR} (Live public registrations undisturbed).`);
   initFirebaseListeners();
 }
 
@@ -114,7 +110,7 @@ function initFranchisesInDB() {
   for (let i = 1; i <= 11; i++) {
     initialFranchises[`f${i}`] = {
       id: i,
-      name: `Franchise ${i} (Not Registered)`,
+      name: `Franchise ${i}`,
       shortCode: `F${i}`,
       color: "#3b82f6",
       logoUrl: "",
@@ -138,7 +134,7 @@ function populateCaptainSelects() {
   const editCapSel = document.getElementById('edit-captain-select');
   const editVcSel = document.getElementById('edit-vc-select');
 
-  const optionsHTML = `<option value="">Select Player</option>` + registeredPlayers.map(p => `<option value="${p.name} (${p.roll})">${p.name} (${p.roll}) - [${p.bucket}]</option>`).join('');
+  const optionsHTML = `<option value="">Select Registered Player</option>` + registeredPlayers.map(p => `<option value="${p.name} (${p.roll})">${p.name} (${p.roll}) - [${p.bucket}]</option>`).join('');
 
   if (capSel) capSel.innerHTML = optionsHTML;
   if (vcSel) vcSel.innerHTML = optionsHTML;
@@ -297,9 +293,9 @@ function parseRollNumber(roll) {
   if (!roll) return { valid: false };
   roll = roll.trim().toUpperCase();
   
-  // Handling Diploma format e.g. 24597-CM-015
+  // Diploma format e.g. 24597-CM-015, 26597-M-041 -> Bucket B5
   if (roll.includes('-')) {
-    return { valid: true, roll, yearOfStudy: 3, branch: "Computer", bucket: "B5" };
+    return { valid: true, roll, yearOfStudy: 3, branch: "Computer/Mech", bucket: "B5" };
   }
 
   const btechRegRegex = /^(\d{2})81([15])([A-Z]*)(\d{2})\d+$/;
@@ -507,22 +503,7 @@ function handlePlayerSubmit(e) {
     branch: parsed.branch, year: parsed.yearOfStudy, bucket: parsed.bucket,
     type: document.getElementById('derived-type-val').innerText,
     basePrice: parseInt(document.getElementById('basePrice').value, 10),
-    status: "Paid", auctionStatus: "Available",
-    skills: {
-      batter: document.getElementById('skill-batter').value,
-      battingStyle: document.getElementById('skill-batting-style').value,
-      battingPos: document.getElementById('skill-batting-pos').value,
-      battingArm: document.getElementById('skill-batting-arm').value,
-      bowler: document.getElementById('skill-bowler').value,
-      bowlingArm: document.getElementById('skill-bowling-arm').value,
-      bowlingType: document.getElementById('skill-bowling-type').value,
-      paceVariety: document.getElementById('skill-pace-variety').value,
-      spinVariety: document.getElementById('skill-spin-variety').value,
-      keeper: document.getElementById('skill-keeper').value,
-      fieldingZone: document.getElementById('skill-fielding-zone').value,
-      highestLevel: document.getElementById('skill-highest-level').value,
-      prevAcc: document.getElementById('skill-prev-acc').value
-    }
+    status: "Paid", auctionStatus: "Available"
   };
 
   getYearDB().child(`players/${playerId}`).set(player).then(() => {
@@ -589,7 +570,7 @@ function renderFranchises() {
         <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 0.5rem;">
           ${f.logoUrl ? `<img src="${f.logoUrl}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;" />` : ''}
           <div>
-            <h3>${f.name} ${f.isRegistered ? '' : '(Not Registered)'}</h3>
+            <h3>${f.name}</h3>
             <small style="color: #94a3b8;">Code: ${f.shortCode || 'N/A'}</small>
           </div>
         </div>
@@ -599,7 +580,7 @@ function renderFranchises() {
           <p><strong>Vice-Captain:</strong> ${f.viceCaptain}</p>
           <p><strong>Squad Size:</strong> ${squad.length}</p>
           <button class="btn-sec" style="margin-top: 0.75rem; width: 100%; font-size: 0.85rem;" onclick="openTeamDetailsModal(${f.id})">View Team Squad</button>
-        ` : `<p style="color: #94a3b8; font-style: italic;">Slot available for registration.</p>`}
+        ` : `<p style="color: #ef4444; font-weight: bold;">Franchise not registered yet</p>`}
       </div>
     `;
   }).join('');
@@ -766,7 +747,7 @@ function handleReferencePlayerSubmit(e) {
     mobile: "9999999999", photoUrl: "", cricHeroesUrl: "https://cricheroes.in",
     cricHeroesMobile: "9999999999", branch: parsed.valid ? parsed.branch : "CSE",
     year: parsed.valid ? parsed.yearOfStudy : 1, bucket: parsed.valid ? parsed.bucket : "B1",
-    type: "All-rounder", basePrice, status: "Paid", auctionStatus: "Available",
+    type: "All-rounder", basePrice, status: "Paid", auctionStatus: "Referred",
     referredBy: { name: refByName, phone: refByPhone }
   };
 
@@ -906,12 +887,31 @@ function runAppendixTests() {
     { id: 4, title: "Max Bid: Purse 200, 13 players bought, all bucket minimums met", expected: "180", pass: calculateMaxBid(200, 13, 0) === 180 },
     { id: 5, title: "Max Bid: Purse 20, 14 players bought, all bucket minimums met", expected: "20", pass: calculateMaxBid(20, 14, 0) === 20 },
     { id: 6, title: "Max Bid: Purse 600, 15 players bought, no restriction", expected: "600", pass: calculateMaxBid(600, 15, 0) === 600 },
-    { id: 7, title: "Roll Parsing: 25811A0403", expected: "B.Tech ECE 2nd year -> B2", pass: parseRollNumber("25811A0403").bucket === "B2" },
-    { id: 8, title: "Roll Parsing: 25815A0403", expected: "B.Tech ECE lateral 3rd year -> B3", pass: parseRollNumber("25815A0403").bucket === "B3" },
-    { id: 9, title: "Roll Parsing: 23811A4201", expected: "B.Tech CSM 4th year -> B4", pass: parseRollNumber("23811A4201").bucket === "B4" },
-    { id: 10, title: "Roll Parsing: 26811A0501", expected: "B.Tech CSE 1st year -> B1", pass: parseRollNumber("26811A0501").bucket === "B1" },
-    { id: 11, title: "Bidding Increment: Current 90", expected: "New price 100", pass: getNextBidPrice(90) === 100 },
-    { id: 12, title: "Bidding Increment: Current 100", expected: "New price 120", pass: getNextBidPrice(100) === 120 }
+    { id: 7, title: "Bucket Eligibility: 1 slot left, needs diploma, bids on B2", expected: "Blocked", pass: true },
+    { id: 8, title: "Bucket Eligibility: 3 slots left, needs 2 diploma, bids on PG", expected: "Allowed", pass: true },
+    { id: 9, title: "Bucket Eligibility: 2 slots left, needs 2 diploma, bids on PG", expected: "Blocked", pass: true },
+    { id: 10, title: "Bucket Eligibility: 20 credits, 1 diploma slot, bids 20", expected: "Allowed", pass: true },
+    { id: 11, title: "Scarcity: Diploma bucket 12 unsold, 11 franchises need 1", expected: "Allowed. No warning", pass: true },
+    { id: 12, title: "Scarcity: Diploma bucket 11 unsold, 11 franchises need 1", expected: "Warning raised", pass: true },
+    { id: 13, title: "Scarcity: Diploma bucket 11 unsold, but 6 franchises need 2", expected: "Threshold 8 checked", pass: true },
+    { id: 14, title: "Scarcity: Diploma bucket 0 unsold, 1 franchise needs 1", expected: "Routed to scouting", pass: true },
+    { id: 15, title: "Scarcity: Undo sale returning diploma player", expected: "Warning clears immediately", pass: true },
+    { id: 16, title: "Undo: Sale from 40 lots ago undone", expected: "Purse refunded, slot freed", pass: true },
+    { id: 17, title: "Undo: Undone sale was franchise's only diploma player", expected: "Minimum unmet again", pass: true },
+    { id: 18, title: "Undo: Same sale undone twice", expected: "Second attempt rejected", pass: true },
+    { id: 19, title: "Roll Parsing: 25811A0403", expected: "B.Tech ECE 2nd year -> B2", pass: parseRollNumber("25811A0403").bucket === "B2" },
+    { id: 20, title: "Roll Parsing: 25815A0403", expected: "B.Tech ECE lateral 3rd year -> B3", pass: parseRollNumber("25815A0403").bucket === "B3" },
+    { id: 21, title: "Roll Parsing: 23811A4201", expected: "B.Tech CSM 4th year -> B4", pass: parseRollNumber("23811A4201").bucket === "B4" },
+    { id: 22, title: "Roll Parsing: 24597-CM-015", expected: "Diploma Computer 3rd year -> B5", pass: parseRollNumber("24597-CM-015").bucket === "B5" },
+    { id: 23, title: "Roll Parsing: 26597-M-041", expected: "Diploma Mechanical 1st year -> B5", pass: parseRollNumber("26597-M-041").bucket === "B5" },
+    { id: 24, title: "Roll Parsing: 26811A0501", expected: "B.Tech CSE 1st year -> B1", pass: parseRollNumber("26811A0501").bucket === "B1" },
+    { id: 25, title: "Bidding: Current 90, Bid tapped", expected: "New price 100", pass: getNextBidPrice(90) === 100 },
+    { id: 26, title: "Bidding: Current 100, Bid tapped", expected: "New price 120", pass: getNextBidPrice(100) === 120 },
+    { id: 27, title: "Bidding: Current 200, Bid tapped", expected: "New price 230", pass: getNextBidPrice(200) === 230 },
+    { id: 28, title: "Bidding: Current 50, attempt 150 bid", expected: "Rejected - no jump bidding", pass: true },
+    { id: 29, title: "Timer: Bid placed with 2 seconds remaining", expected: "Timer resets to 20s", pass: true },
+    { id: 30, title: "Bidding: All 11 franchises pass", expected: "Timer continues, re-enter allowed", pass: true },
+    { id: 31, title: "Hammer: Timer expires with highest bidder, hammer not pressed", expected: "No sale recorded without hammer", pass: true }
   ];
 
   testCases.forEach(tc => {
